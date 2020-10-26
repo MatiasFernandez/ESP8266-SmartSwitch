@@ -212,7 +212,7 @@ void updateClock() {
   }
 }
 
-void reportStatus() {
+String statusReportMessage() {
   StaticJsonDocument<JSON_OBJECT_SIZE(3)> json;
   
   json["type"] = "statusReport";
@@ -222,8 +222,20 @@ void reportStatus() {
   String webSocketMessage;
   
   serializeJson(json, webSocketMessage);
+
+  return webSocketMessage;
+}
+
+void reportStatusTo(uint8_t clientNum) {
+  String message = statusReportMessage();
   
-  webSocket.broadcastTXT(webSocketMessage);
+  Serial.println(message);
+  webSocket.sendTXT(clientNum, message);
+}
+
+void broadcastStatus() {
+  String message = statusReportMessage();
+  webSocket.broadcastTXT(message);
 }
 
 void toggleSwitch(boolean enable) {
@@ -235,7 +247,7 @@ void toggleSwitch(boolean enable) {
     digitalWrite(SMART_SWITCH_PIN, HIGH);
   }
   
-  reportStatus();
+  broadcastStatus();
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
@@ -246,7 +258,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
     case WStype_CONNECTED: {
         IPAddress ip = webSocket.remoteIP(num);
         Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-        reportStatus();
+        reportStatusTo(num);
       }
       break;
     case WStype_TEXT:  { // if new text data is received
