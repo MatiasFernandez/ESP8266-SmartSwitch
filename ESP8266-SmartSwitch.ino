@@ -128,6 +128,11 @@ void setupWebServer() {
   
   webServer.serveStatic("/", SPIFFS, "/index.html");
   webServer.serveStatic("/app.css", SPIFFS, "/app.css");
+  webServer.serveStatic("/main.js", SPIFFS, "/main.js");
+  webServer.serveStatic("/sw.js", SPIFFS, "/sw.js");
+  webServer.serveStatic("/manifest.json", SPIFFS, "/manifest.json");
+  webServer.serveStatic("/icon-192x192.png", SPIFFS, "/icon-192x192.png");
+  webServer.serveStatic("/icon-512x512.png", SPIFFS, "/icon-512x512.png");
 
   webServer.begin();
 
